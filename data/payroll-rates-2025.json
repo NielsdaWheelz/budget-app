@@ -1,0 +1,7 @@
+{
+	"socialSecurityRate": 0.062,
+	"socialSecurityWageBase": 17610000,
+	"medicareRate": 0.0145,
+	"additionalMedicareRate": 0.009,
+	"additionalMedicareThreshold": 20000000
+}
