@@ -1,4 +1,5 @@
 import { type Component, For } from "solid-js"
+import { CashFlowDiagram } from "./components/cash-flow"
 import { DeductionsCard } from "./components/deductions-card"
 import { ExpenseCard } from "./components/expense-card"
 import { IncomeCard } from "./components/income-card"
@@ -120,6 +121,8 @@ const AppContent: Component = () => {
 			/>
 
 			<TakeHomeCard takeHomePay={budget.displayed().takeHomePay} />
+
+			<CashFlowDiagram displayed={budget.displayed()} />
 
 			<For each={budget.displayed().categories}>
 				{(category) => (
