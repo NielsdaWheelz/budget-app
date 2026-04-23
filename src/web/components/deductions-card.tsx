@@ -64,7 +64,7 @@ const TaxLineWithBrackets: Component<{
 					"align-items": "center",
 					padding: "8px 0",
 					border: "none",
-					"border-bottom": "1px solid #f5f5f5",
+					"border-bottom": "1px solid var(--color-border-subtle)",
 					background: "none",
 					cursor: "pointer",
 					"user-select": "none",
@@ -74,7 +74,7 @@ const TaxLineWithBrackets: Component<{
 				<span
 					style={{
 						"font-size": "14px",
-						color: "#171717",
+						color: "var(--color-text)",
 						"font-family": "Inter, sans-serif",
 					}}
 				>
@@ -82,7 +82,7 @@ const TaxLineWithBrackets: Component<{
 						style={{
 							"font-size": "10px",
 							"margin-right": "6px",
-							color: "#a3a3a3",
+							color: "var(--color-text-muted)",
 						}}
 					>
 						{expanded() ? "\u25BC" : "\u25B6"}
@@ -100,7 +100,7 @@ const TaxLineWithBrackets: Component<{
 							"font-family": "Inter, sans-serif",
 							"font-variant-numeric": "tabular-nums",
 							"font-size": "14px",
-							color: "#171717",
+							color: "var(--color-text)",
 						}}
 					>
 						{"\u2212"}
@@ -108,7 +108,7 @@ const TaxLineWithBrackets: Component<{
 					</span>
 					<span
 						style={{
-							color: "#737373",
+							color: "var(--color-text-secondary)",
 							"font-size": "13px",
 							"margin-left": "12px",
 							"min-width": "48px",
@@ -135,10 +135,10 @@ const TaxLineWithBrackets: Component<{
 							display: "flex",
 							"justify-content": "space-between",
 							"font-size": "13px",
-							color: "#171717",
+							color: "var(--color-text)",
 							"font-weight": "500",
 							padding: "6px 0 6px 16px",
-							"border-top": "1px solid #f0f0f0",
+							"border-top": "1px solid var(--color-border-section)",
 							"margin-top": "4px",
 							"font-family": "Inter, sans-serif",
 						}}
@@ -189,13 +189,13 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 					"justify-content": "space-between",
 					"align-items": "center",
 					padding: "8px 0",
-					"border-bottom": "1px solid #f5f5f5",
+					"border-bottom": "1px solid var(--color-border-subtle)",
 				}}
 			>
 				<span
 					style={{
 						"font-size": "14px",
-						color: "#171717",
+						color: "var(--color-text)",
 						"font-family": "Inter, sans-serif",
 					}}
 				>
@@ -207,7 +207,7 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 							"font-family": "Inter, sans-serif",
 							"font-variant-numeric": "tabular-nums",
 							"font-size": "14px",
-							color: "#171717",
+							color: "var(--color-text)",
 						}}
 					>
 						{"\u2212"}
@@ -215,7 +215,7 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 					</span>
 					<span
 						style={{
-							color: "#737373",
+							color: "var(--color-text-secondary)",
 							"font-size": "13px",
 							"margin-left": "12px",
 							"min-width": "48px",
@@ -238,13 +238,13 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 					"justify-content": "space-between",
 					"align-items": "center",
 					padding: "8px 0",
-					"border-bottom": "1px solid #f5f5f5",
+					"border-bottom": "1px solid var(--color-border-subtle)",
 				}}
 			>
 				<span
 					style={{
 						"font-size": "14px",
-						color: "#171717",
+						color: "var(--color-text)",
 						"font-family": "Inter, sans-serif",
 					}}
 				>
@@ -256,7 +256,7 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 							"font-family": "Inter, sans-serif",
 							"font-variant-numeric": "tabular-nums",
 							"font-size": "14px",
-							color: "#171717",
+							color: "var(--color-text)",
 						}}
 					>
 						{"\u2212"}
@@ -264,7 +264,7 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 					</span>
 					<span
 						style={{
-							color: "#737373",
+							color: "var(--color-text-secondary)",
 							"font-size": "13px",
 							"margin-left": "12px",
 							"min-width": "48px",
@@ -287,13 +287,13 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 					"justify-content": "space-between",
 					"align-items": "center",
 					padding: "8px 0",
-					"border-bottom": "1px solid #f5f5f5",
+					"border-bottom": "1px solid var(--color-border-subtle)",
 				}}
 			>
 				<span
 					style={{
 						"font-size": "14px",
-						color: "#171717",
+						color: "var(--color-text)",
 						"font-family": "Inter, sans-serif",
 					}}
 				>
@@ -305,14 +305,14 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 							"font-family": "Inter, sans-serif",
 							"font-variant-numeric": "tabular-nums",
 							"font-size": "14px",
-							color: "#171717",
+							color: "var(--color-text)",
 						}}
 					>
 						<InlineEdit value={props.healthInsurance} onCommit={props.onHealthInsuranceChange} />
 					</span>
 					<span
 						style={{
-							color: "#737373",
+							color: "var(--color-text-secondary)",
 							"font-size": "13px",
 							"margin-left": "12px",
 							"min-width": "48px",
@@ -338,7 +338,7 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 				<span
 					style={{
 						"font-size": "14px",
-						color: "#171717",
+						color: "var(--color-text)",
 						"font-family": "Inter, sans-serif",
 					}}
 				>
@@ -350,14 +350,14 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 							"font-family": "Inter, sans-serif",
 							"font-variant-numeric": "tabular-nums",
 							"font-size": "14px",
-							color: "#171717",
+							color: "var(--color-text)",
 						}}
 					>
 						<InlineEdit value={props.rentersInsurance} onCommit={props.onRentersInsuranceChange} />
 					</span>
 					<span
 						style={{
-							color: "#737373",
+							color: "var(--color-text-secondary)",
 							"font-size": "13px",
 							"margin-left": "12px",
 							"min-width": "48px",

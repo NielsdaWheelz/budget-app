@@ -29,8 +29,8 @@ export const SummaryCard: Component<SummaryCardProps> = (props) => {
 	return (
 		<div
 			style={{
-				background: "#ffffff",
-				border: "1px solid #e5e5e5",
+				background: "var(--color-bg-card)",
+				border: "1px solid var(--color-border)",
 				"border-radius": "12px",
 				padding: "16px 20px",
 				"margin-bottom": "12px",
@@ -58,7 +58,7 @@ export const SummaryCard: Component<SummaryCardProps> = (props) => {
 						style={{
 							"font-size": "12px",
 							"margin-right": "8px",
-							color: "#a3a3a3",
+							color: "var(--color-text-muted)",
 						}}
 					>
 						{props.expanded ? "\u25BC" : "\u25B6"}
@@ -67,7 +67,7 @@ export const SummaryCard: Component<SummaryCardProps> = (props) => {
 						style={{
 							"font-size": "16px",
 							"font-weight": "600",
-							color: "#171717",
+							color: "var(--color-text)",
 						}}
 					>
 						{props.heading}
@@ -79,14 +79,14 @@ export const SummaryCard: Component<SummaryCardProps> = (props) => {
 							"font-size": "16px",
 							"font-weight": "500",
 							"font-variant-numeric": "tabular-nums",
-							color: "#171717",
+							color: "var(--color-text)",
 						}}
 					>
 						{displayAmount()}
 					</span>
 					<span
 						style={{
-							color: "#737373",
+							color: "var(--color-text-secondary)",
 							"font-size": "13px",
 							"margin-left": "12px",
 							"font-variant-numeric": "tabular-nums",
@@ -103,7 +103,7 @@ export const SummaryCard: Component<SummaryCardProps> = (props) => {
 						style={{
 							"text-align": "right",
 							"font-size": "13px",
-							color: "#737373",
+							color: "var(--color-text-secondary)",
 							"margin-top": "2px",
 						}}
 					>
@@ -115,7 +115,7 @@ export const SummaryCard: Component<SummaryCardProps> = (props) => {
 			<Show when={!props.expanded && props.itemCount !== undefined}>
 				<div
 					style={{
-						color: "#a3a3a3",
+						color: "var(--color-text-muted)",
 						"font-size": "13px",
 						"padding-top": "4px",
 					}}
@@ -127,7 +127,7 @@ export const SummaryCard: Component<SummaryCardProps> = (props) => {
 			<Show when={props.expanded}>
 				<div
 					style={{
-						"border-top": "1px solid #f0f0f0",
+						"border-top": "1px solid var(--color-border-section)",
 						"margin-top": "12px",
 						"padding-top": "12px",
 					}}

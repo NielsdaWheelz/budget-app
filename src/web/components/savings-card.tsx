@@ -14,8 +14,8 @@ export const SavingsCard: Component<SavingsCardProps> = (props) => {
 	return (
 		<div
 			style={{
-				background: "#ffffff",
-				border: "1px solid #e5e5e5",
+				background: "var(--color-bg-card)",
+				border: "1px solid var(--color-border)",
 				"border-radius": "12px",
 				padding: "16px 20px",
 				"margin-bottom": "12px",
@@ -33,7 +33,7 @@ export const SavingsCard: Component<SavingsCardProps> = (props) => {
 					style={{
 						"font-size": "16px",
 						"font-weight": "600",
-						color: "#171717",
+						color: "var(--color-text)",
 					}}
 				>
 					Savings
@@ -43,7 +43,7 @@ export const SavingsCard: Component<SavingsCardProps> = (props) => {
 						style={{
 							"font-size": "16px",
 							"font-weight": "500",
-							color: "#16a34a",
+							color: "var(--color-success)",
 							"font-variant-numeric": "tabular-nums",
 						}}
 					>
@@ -51,7 +51,7 @@ export const SavingsCard: Component<SavingsCardProps> = (props) => {
 					</span>
 					<span
 						style={{
-							color: "#737373",
+							color: "var(--color-text-secondary)",
 							"font-size": "13px",
 							"margin-left": "12px",
 							"font-variant-numeric": "tabular-nums",
@@ -65,7 +65,7 @@ export const SavingsCard: Component<SavingsCardProps> = (props) => {
 				style={{
 					"text-align": "right",
 					"font-size": "13px",
-					color: "#737373",
+					color: "var(--color-text-secondary)",
 					"margin-top": "4px",
 				}}
 			>

@@ -30,13 +30,13 @@ export const LineItemRow: Component<LineItemRowProps> = (props) => {
 				"justify-content": "space-between",
 				"align-items": "center",
 				padding: "8px 0",
-				"border-bottom": "1px solid #f5f5f5",
+				"border-bottom": "1px solid var(--color-border-subtle)",
 			}}
 		>
 			<span
 				style={{
 					"font-size": "14px",
-					color: "#171717",
+					color: "var(--color-text)",
 					"font-family": "Inter, sans-serif",
 				}}
 			>
@@ -53,7 +53,7 @@ export const LineItemRow: Component<LineItemRowProps> = (props) => {
 						"font-family": "Inter, sans-serif",
 						"font-variant-numeric": "tabular-nums",
 						"font-size": "14px",
-						color: "#171717",
+						color: "var(--color-text)",
 					}}
 				>
 					<Show
@@ -68,7 +68,7 @@ export const LineItemRow: Component<LineItemRowProps> = (props) => {
 				</span>
 				<span
 					style={{
-						color: "#737373",
+						color: "var(--color-text-secondary)",
 						"font-size": "13px",
 						"margin-left": "12px",
 						"min-width": "48px",

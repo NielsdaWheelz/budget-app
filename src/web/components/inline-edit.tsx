@@ -87,7 +87,7 @@ export const InlineEdit: Component<InlineEditProps> = (props) => {
 					"font-variant-numeric": "tabular-nums",
 					"font-family": "Inter, sans-serif",
 					"font-size": "inherit",
-					border: "1px solid #e5e5e5",
+					border: "1px solid var(--color-border)",
 					"border-radius": "4px",
 					padding: "2px 6px",
 					outline: "none",

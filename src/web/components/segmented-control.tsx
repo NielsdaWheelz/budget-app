@@ -11,7 +11,7 @@ export function SegmentedControl<T extends string>(props: SegmentedControlProps<
 		<div
 			style={{
 				display: "flex",
-				background: "#f5f5f5",
+				background: "var(--color-border-subtle)",
 				"border-radius": "8px",
 				padding: "2px",
 			}}
@@ -22,8 +22,11 @@ export function SegmentedControl<T extends string>(props: SegmentedControlProps<
 						type="button"
 						onClick={() => props.onChange(option.value)}
 						style={{
-							background: props.value === option.value ? "#2563eb" : "transparent",
-							color: props.value === option.value ? "#ffffff" : "#737373",
+							background: props.value === option.value ? "var(--color-accent)" : "transparent",
+							color:
+								props.value === option.value
+									? "var(--color-bg-card)"
+									: "var(--color-text-secondary)",
 							"font-weight": props.value === option.value ? "500" : "400",
 							"border-radius": "6px",
 							padding: "6px 16px",

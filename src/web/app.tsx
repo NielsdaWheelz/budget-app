@@ -6,6 +6,7 @@ import { SavingsCard } from "./components/savings-card"
 import { SegmentedControl } from "./components/segmented-control"
 import { TakeHomeCard } from "./components/take-home-card"
 import { useBudget } from "./hooks/use-budget"
+import { ThemeProvider, useTheme } from "./theme"
 
 const SCENARIO_OPTIONS: ReadonlyArray<{ readonly value: string; readonly label: string }> = [
 	{ value: "Solo", label: "Solo" },
@@ -18,8 +19,9 @@ const PERIOD_OPTIONS: ReadonlyArray<{ readonly value: string; readonly label: st
 	{ value: "Yearly", label: "Yearly" },
 ]
 
-export const App: Component = () => {
+const AppContent: Component = () => {
 	const budget = useBudget()
+	const { theme, setTheme } = useTheme()
 
 	return (
 		<div
@@ -43,28 +45,39 @@ export const App: Component = () => {
 					style={{
 						"font-size": "24px",
 						"font-weight": "600",
-						color: "#171717",
+						color: "var(--color-text)",
 						margin: "0",
 					}}
 				>
 					Budget
 				</h1>
-				<button
-					type="button"
-					onClick={budget.toggleAll}
-					style={{
-						background: "none",
-						border: "1px solid #e5e5e5",
-						"border-radius": "6px",
-						padding: "6px 12px",
-						"font-size": "13px",
-						color: "#737373",
-						cursor: "pointer",
-						"font-family": "Inter, sans-serif",
-					}}
-				>
-					{budget.allExpanded() ? "Collapse All" : "Expand All"}
-				</button>
+				<div style={{ display: "flex", gap: "8px", "align-items": "center" }}>
+					<SegmentedControl
+						options={[
+							{ label: "System", value: "system" },
+							{ label: "Light", value: "light" },
+							{ label: "Dark", value: "dark" },
+						]}
+						value={theme()}
+						onChange={(v) => setTheme(v as "system" | "light" | "dark")}
+					/>
+					<button
+						type="button"
+						onClick={budget.toggleAll}
+						style={{
+							background: "none",
+							border: "1px solid var(--color-border)",
+							"border-radius": "6px",
+							padding: "6px 12px",
+							"font-size": "13px",
+							color: "var(--color-text-secondary)",
+							cursor: "pointer",
+							"font-family": "Inter, sans-serif",
+						}}
+					>
+						{budget.allExpanded() ? "Collapse All" : "Expand All"}
+					</button>
+				</div>
 			</div>
 
 			{/* Controls */}
@@ -128,5 +141,13 @@ export const App: Component = () => {
 				takeHomePay={budget.displayed().takeHomePay}
 			/>
 		</div>
+	)
+}
+
+export const App: Component = () => {
+	return (
+		<ThemeProvider>
+			<AppContent />
+		</ThemeProvider>
 	)
 }

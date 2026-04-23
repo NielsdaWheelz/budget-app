@@ -10,8 +10,8 @@ export const IncomeCard: Component<IncomeCardProps> = (props) => {
 	return (
 		<div
 			style={{
-				background: "#ffffff",
-				border: "1px solid #e5e5e5",
+				background: "var(--color-bg-card)",
+				border: "1px solid var(--color-border)",
 				"border-radius": "12px",
 				padding: "16px 20px",
 				"margin-bottom": "12px",
@@ -29,7 +29,7 @@ export const IncomeCard: Component<IncomeCardProps> = (props) => {
 					style={{
 						"font-size": "16px",
 						"font-weight": "600",
-						color: "#171717",
+						color: "var(--color-text)",
 					}}
 				>
 					Gross Income
@@ -38,7 +38,7 @@ export const IncomeCard: Component<IncomeCardProps> = (props) => {
 					style={{
 						"font-size": "16px",
 						"font-weight": "500",
-						color: "#16a34a",
+						color: "var(--color-success)",
 						"font-variant-numeric": "tabular-nums",
 					}}
 				>

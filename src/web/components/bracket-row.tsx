@@ -18,7 +18,7 @@ export const BracketRow: Component<BracketRowProps> = (props) => {
 				display: "flex",
 				"justify-content": "space-between",
 				"font-size": "13px",
-				color: "#737373",
+				color: "var(--color-text-secondary)",
 				padding: "4px 0 4px 16px",
 				"font-family": "Inter, sans-serif",
 			}}
