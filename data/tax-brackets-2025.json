@@ -3,7 +3,7 @@
 		"filingStatus": "Single",
 		"standardDeduction": 1500000,
 		"brackets": [
-			{ "min": 0, "max": 1192500, "rate": 0.10 },
+			{ "min": 0, "max": 1192500, "rate": 0.1 },
 			{ "min": 1192500, "max": 4847500, "rate": 0.12 },
 			{ "min": 4847500, "max": 10335000, "rate": 0.22 },
 			{ "min": 10335000, "max": 19730000, "rate": 0.24 },
