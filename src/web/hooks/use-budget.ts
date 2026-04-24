@@ -1,5 +1,6 @@
 import { Effect, Layer } from "effect"
 import { batch, createEffect, createMemo, createSignal } from "solid-js"
+import { toast } from "solid-sonner"
 import payrollRatesRaw from "../../../data/payroll-rates-2025.json"
 import federalBracketsRaw from "../../../data/tax-brackets-2025.json"
 import {
@@ -11,14 +12,13 @@ import {
 import type { LineItem } from "../../domain/budget"
 import type { Cents } from "../../domain/money"
 import type { PayrollRates } from "../../domain/payroll"
-import type { PersistedState } from "../../domain/persistence"
 import { SCENARIOS } from "../../domain/scenario"
 import type { TaxBracketTable } from "../../domain/tax"
 import { BudgetService } from "../../services/budget-service"
 import { PayrollService } from "../../services/payroll-service"
-import { PersistenceService } from "../../services/persistence-service"
 import { ScenarioService } from "../../services/scenario-service"
 import { TaxService } from "../../services/tax-service"
+import { budgetApi } from "../api-client"
 
 const federalTable: TaxBracketTable = {
 	jurisdiction: "Federal",
@@ -63,44 +63,49 @@ const GROUP_HEADINGS: Record<string, string> = {
 	Discretionary: "Discretionary",
 }
 
-// ── Persistence ──
-
-const persisted: PersistedState | null = Effect.runSync(
-	Effect.gen(function* () {
-		const svc = yield* PersistenceService
-		return yield* svc.load
-	}).pipe(Effect.provide(PersistenceService.layer)),
-)
-
-const hydrateItems = (saved: PersistedState): ReadonlyArray<LineItem> =>
-	BASE_LINE_ITEMS.map((item) => {
-		const amount = saved.lineItemAmounts[item.key as string]
-		return amount !== undefined ? { ...item, amount: amount as Cents } : item
-	})
-
 export function useBudget() {
-	const [grossIncome, setGrossIncome] = createSignal<number>(
-		persisted?.grossIncome ?? (DEFAULT_GROSS_MONTHLY_INCOME as number),
-	)
+	const [ready, setReady] = createSignal(false)
+	const [grossIncome, setGrossIncome] = createSignal<number>(DEFAULT_GROSS_MONTHLY_INCOME as number)
 	const [healthInsurance, setHealthInsurance] = createSignal<number>(
-		persisted?.healthInsurance ?? (DEFAULT_HEALTH_INSURANCE as number),
+		DEFAULT_HEALTH_INSURANCE as number,
 	)
 	const [rentersInsurance, setRentersInsurance] = createSignal<number>(
-		persisted?.rentersInsurance ?? (DEFAULT_RENTERS_INSURANCE as number),
+		DEFAULT_RENTERS_INSURANCE as number,
 	)
-	const [scenarioName, setScenarioName] = createSignal<string>(persisted?.scenarioName ?? "Solo")
-	const [period, setPeriod] = createSignal<string>(persisted?.period ?? "Monthly")
-	const [baseItems, setBaseItems] = createSignal<ReadonlyArray<LineItem>>(
-		persisted ? hydrateItems(persisted) : BASE_LINE_ITEMS,
-	)
+	const [scenarioName, setScenarioName] = createSignal<string>("Solo")
+	const [period, setPeriod] = createSignal<string>("Monthly")
+	const [baseItems, setBaseItems] = createSignal<ReadonlyArray<LineItem>>(BASE_LINE_ITEMS)
 	const [expandedSections, setExpandedSections] = createSignal<Set<string>>(new Set())
 	const [allExpanded, setAllExpanded] = createSignal(false)
+
+	// ── Load from API ──
+
+	const loadFromApi = async () => {
+		const saved = await budgetApi.load()
+		if (saved) {
+			batch(() => {
+				setGrossIncome(saved.grossIncome)
+				setHealthInsurance(saved.healthInsurance)
+				setRentersInsurance(saved.rentersInsurance)
+				setScenarioName(saved.scenarioName)
+				setPeriod(saved.period)
+				setBaseItems(
+					BASE_LINE_ITEMS.map((item) => {
+						const amount = saved.lineItemAmounts[item.key as string]
+						return amount !== undefined ? { ...item, amount: amount as Cents } : item
+					}),
+				)
+			})
+		}
+		setReady(true)
+	}
 
 	// ── Auto-save (debounced 500ms) ──
 
 	let saveTimeout: ReturnType<typeof setTimeout> | undefined
 	createEffect(() => {
-		const state: PersistedState = {
+		if (!ready()) return
+		const state = {
 			grossIncome: grossIncome(),
 			healthInsurance: healthInsurance(),
 			rentersInsurance: rentersInsurance(),
@@ -112,18 +117,13 @@ export function useBudget() {
 		}
 		clearTimeout(saveTimeout)
 		saveTimeout = setTimeout(() => {
-			Effect.runSync(
-				Effect.gen(function* () {
-					const svc = yield* PersistenceService
-					return yield* svc.save(state)
-				}).pipe(Effect.provide(PersistenceService.layer)),
-			)
+			budgetApi.save(state).catch(() => toast.error("Failed to save budget"))
 		}, 500)
 	})
 
 	const scenario = createMemo(() => {
 		const found = SCENARIOS.find((s) => s.name === scenarioName())
-		// biome-ignore lint/style/noNonNullAssertion: justify-biome-override: SCENARIOS is a non-empty constant array
+		// biome-ignore lint/style/noNonNullAssertion: SCENARIOS is a non-empty constant array
 		return found ?? SCENARIOS[0]!
 	})
 
@@ -307,6 +307,8 @@ export function useBudget() {
 	}
 
 	return {
+		ready,
+		loadFromApi,
 		grossIncome,
 		setGrossIncome: (cents: number) => setGrossIncome(cents),
 		healthInsurance,
