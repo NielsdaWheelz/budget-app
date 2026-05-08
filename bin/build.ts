@@ -9,7 +9,7 @@ await rm(OUT, { recursive: true, force: true })
 await $`vite build`
 
 await mkdir(`${FN}/api`, { recursive: true })
-await $`bun build api/handler.ts --target=bun --outfile=${FN}/api/handler.js --sourcemap=inline`
+await $`bun build src/server/main.ts --target=bun --outfile=${FN}/api/handler.js --sourcemap=inline`
 
 await writeFile(
 	`${FN}/.vc-config.json`,

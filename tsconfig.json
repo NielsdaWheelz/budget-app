@@ -20,6 +20,6 @@
 		"exactOptionalPropertyTypes": false,
 		"noUncheckedIndexedAccess": true
 	},
-	"include": ["src/**/*", "api/**/*"],
+	"include": ["src/**/*", "bin/**/*"],
 	"exclude": ["node_modules", "dist"]
 }
