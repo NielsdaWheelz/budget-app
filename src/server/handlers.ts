@@ -1,9 +1,8 @@
 import { HttpApiBuilder } from "@effect/platform"
 import { SqlClient } from "@effect/sql"
 import { PgClient } from "@effect/sql-pg"
-import { compareSync, hashSync } from "bcryptjs"
 import { Effect, Layer, Redacted } from "effect"
-import type { BudgetState } from "../shared/schemas.js"
+import type { BudgetState } from "../shared/schemas"
 import {
 	AuthError,
 	AuthMiddleware,
@@ -11,7 +10,7 @@ import {
 	ConflictError,
 	CurrentUser,
 	sessionSecurity,
-} from "./api.js"
+} from "./api"
 
 // ---------------------------------------------------------------------------
 // Auth middleware implementation
@@ -31,18 +30,13 @@ const AuthMiddlewareLayer = Layer.effect(
 						join users u on u.id = s.user_id
 						where s.id = ${sessionId}
 						  and s.expires_at > now()
-					`
+					`.pipe(Effect.orDie)
 					if (rows.length === 0) {
 						return yield* new AuthError({ message: "Invalid or expired session" })
 					}
 					const row = rows[0] as { user_id: string; email: string }
 					return { userId: row.user_id, email: row.email }
-				}).pipe(
-					Effect.catchTag(
-						"SqlError",
-						() => new AuthError({ message: "Authentication service unavailable" }),
-					),
-				),
+				}),
 		}
 	}),
 )
@@ -60,13 +54,11 @@ const AuthGroupLayer = HttpApiBuilder.group(BudgetApi, "auth", (handlers) =>
 					select id from users where email = ${payload.email}
 				`.pipe(Effect.orDie)
 				if (existing.length > 0) {
-					return yield* new ConflictError({
-						message: "Email already registered",
-					})
+					return yield* new ConflictError({ message: "Email already registered" })
 				}
 
 				const userId = crypto.randomUUID()
-				const hashed = hashSync(payload.password, 10)
+				const hashed = yield* Effect.promise(() => Bun.password.hash(payload.password))
 				yield* sql`
 					insert into users (id, email, password)
 					values (${userId}, ${payload.email}, ${hashed})
@@ -97,20 +89,13 @@ const AuthGroupLayer = HttpApiBuilder.group(BudgetApi, "auth", (handlers) =>
 					select id, email, password from users where email = ${payload.email}
 				`.pipe(Effect.orDie)
 				if (users.length === 0) {
-					return yield* new AuthError({
-						message: "Invalid email or password",
-					})
+					return yield* new AuthError({ message: "Invalid email or password" })
 				}
 
-				const user = users[0] as {
-					id: string
-					email: string
-					password: string
-				}
-				if (!compareSync(payload.password, user.password)) {
-					return yield* new AuthError({
-						message: "Invalid email or password",
-					})
+				const user = users[0] as { id: string; email: string; password: string }
+				const ok = yield* Effect.promise(() => Bun.password.verify(payload.password, user.password))
+				if (!ok) {
+					return yield* new AuthError({ message: "Invalid email or password" })
 				}
 
 				yield* sql`
@@ -179,9 +164,7 @@ const BudgetGroupLayer = HttpApiBuilder.group(BudgetApi, "budget", (handlers) =>
 				yield* pg
 					.withTransaction(
 						Effect.gen(function* () {
-							yield* pg`
-								set transaction isolation level serializable
-							`
+							yield* pg`set transaction isolation level serializable`
 							const existing = yield* pg`
 								select id from budgets where user_id = ${userId}
 							`
@@ -205,17 +188,6 @@ const BudgetGroupLayer = HttpApiBuilder.group(BudgetApi, "budget", (handlers) =>
 		),
 )
 
-// ---------------------------------------------------------------------------
-// Self-wired handlers layer
-//
-// Accepts PgClient | SqlClient and closes it internally.
-// Exposes `never` in R — the process layer provides DbLayer.
-// ---------------------------------------------------------------------------
-
-export const makeHandlersLayer = <E>(
-	dbLayer: Layer.Layer<PgClient.PgClient | SqlClient.SqlClient, E>,
-) =>
-	Layer.mergeAll(AuthGroupLayer, BudgetGroupLayer).pipe(
-		Layer.provide(AuthMiddlewareLayer),
-		Layer.provide(dbLayer),
-	)
+export const HandlersLayer = Layer.mergeAll(AuthGroupLayer, BudgetGroupLayer).pipe(
+	Layer.provide(AuthMiddlewareLayer),
+)

@@ -5,18 +5,17 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build",
+		"build": "bun run bin/build.ts",
 		"migrate": "bun run src/server/bin/migrate.ts",
 		"check": "biome check .",
 		"check:fix": "biome check --write ."
 	},
 	"dependencies": {
 		"@effect/platform": "~0.80.0",
-		"@effect/platform-node": "~0.76.0",
+		"@effect/platform-bun": "~0.61.0",
 		"@effect/schema": "^0.75.0",
 		"@effect/sql": "~0.33.0",
 		"@effect/sql-pg": "~0.34.0",
-		"bcryptjs": "^3.0.2",
 		"d3-sankey": "^0.12.3",
 		"d3-shape": "^3.2.0",
 		"effect": "^3.14.0",
@@ -25,10 +24,10 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.0",
-		"@types/bcryptjs": "^3.0.0",
-		"@types/node": "^22.0.0",
+		"@types/bun": "^1.3.13",
 		"@types/d3-sankey": "^0.12.5",
 		"@types/d3-shape": "^3.1.8",
+		"@types/node": "^22.0.0",
 		"typescript": "^5.7.0",
 		"vite": "^6.0.0",
 		"vite-plugin-solid": "^2.11.0"

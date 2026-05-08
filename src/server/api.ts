@@ -6,7 +6,7 @@ import {
 	HttpApiSecurity,
 } from "@effect/platform"
 import { Context, Schema } from "effect"
-import { AuthResult, BudgetState, LoginRequest, RegisterRequest } from "../shared/schemas.js"
+import { AuthResult, BudgetState, LoginRequest, RegisterRequest } from "../shared/schemas"
 
 // ---------------------------------------------------------------------------
 // Errors
