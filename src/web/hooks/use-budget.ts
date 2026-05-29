@@ -9,10 +9,10 @@ import {
 	DEFAULT_HEALTH_INSURANCE,
 	DEFAULT_RENTERS_INSURANCE,
 } from "../../config/budget-config"
-import type { LineItem } from "../../domain/budget"
-import type { Cents } from "../../domain/money"
+import { type LineItem, LineItemKey } from "../../domain/budget"
+import { type Cents, toMonthly } from "../../domain/money"
 import type { PayrollRates } from "../../domain/payroll"
-import { SCENARIOS } from "../../domain/scenario"
+import { SCENARIOS, removeScenarioShare } from "../../domain/scenario"
 import type { TaxBracketTable } from "../../domain/tax"
 import { BudgetService } from "../../services/budget-service"
 import { PayrollService } from "../../services/payroll-service"
@@ -199,6 +199,8 @@ export function useBudget() {
 	})
 
 	const scale = createMemo(() => (period() === "Yearly" ? 1 : 1 / 12))
+	const displayedToMonthly = (cents: number): Cents =>
+		period() === "Yearly" ? toMonthly(cents as Cents) : (cents as Cents)
 
 	const displayed = createMemo(() => {
 		const br = budgetResult()
@@ -299,10 +301,11 @@ export function useBudget() {
 	const isSectionExpanded = (group: string) => expandedSections().has(group)
 
 	const updateLineItem = (key: string, cents: number) => {
+		const itemKey = LineItemKey(key)
+		const monthlyScenarioAmount = displayedToMonthly(cents)
+		const baseAmount = removeScenarioShare(monthlyScenarioAmount, scenario(), itemKey)
 		setBaseItems((prev) =>
-			prev.map((item) =>
-				(item.key as string) === key ? { ...item, amount: cents as Cents } : item,
-			),
+			prev.map((item) => ((item.key as string) === key ? { ...item, amount: baseAmount } : item)),
 		)
 	}
 
@@ -310,11 +313,11 @@ export function useBudget() {
 		ready,
 		loadFromApi,
 		grossIncome,
-		setGrossIncome: (cents: number) => setGrossIncome(cents),
+		setGrossIncome: (cents: number) => setGrossIncome(displayedToMonthly(cents)),
 		healthInsurance,
-		setHealthInsurance: (cents: number) => setHealthInsurance(cents),
+		setHealthInsurance: (cents: number) => setHealthInsurance(displayedToMonthly(cents)),
 		rentersInsurance,
-		setRentersInsurance: (cents: number) => setRentersInsurance(cents),
+		setRentersInsurance: (cents: number) => setRentersInsurance(displayedToMonthly(cents)),
 		scenarioName,
 		setScenarioName,
 		period,

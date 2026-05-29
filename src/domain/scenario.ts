@@ -1,42 +1,48 @@
 import { Schema } from "effect"
 import { LineItemKey, LineItemKeySchema } from "./budget"
-import { CentsSchema, fromDollars } from "./money"
+import { type Cents, multiply } from "./money"
 
 export const ScenarioName = Schema.Literal("Solo", "OneRoommate", "MultiRoommates")
 export type ScenarioName = typeof ScenarioName.Type
 
-export const ScenarioOverride = Schema.Struct({
+export const ScenarioSharedItem = Schema.Struct({
 	key: LineItemKeySchema,
-	amount: CentsSchema,
+	divisor: Schema.Int.pipe(Schema.greaterThanOrEqualTo(1)),
 })
-export type ScenarioOverride = typeof ScenarioOverride.Type
+export type ScenarioSharedItem = typeof ScenarioSharedItem.Type
 
 export const Scenario = Schema.Struct({
 	name: ScenarioName,
-	overrides: Schema.Array(ScenarioOverride),
+	sharedItems: Schema.Array(ScenarioSharedItem),
 })
 export type Scenario = typeof Scenario.Type
 
 export const SCENARIOS: ReadonlyArray<typeof Scenario.Type> = [
 	{
 		name: "Solo",
-		overrides: [
-			{ key: LineItemKey("Rent"), amount: fromDollars(3200) },
-			{ key: LineItemKey("Internet"), amount: fromDollars(100) },
-		],
+		sharedItems: [],
 	},
 	{
 		name: "OneRoommate",
-		overrides: [
-			{ key: LineItemKey("Rent"), amount: fromDollars(1600) },
-			{ key: LineItemKey("Internet"), amount: fromDollars(50) },
+		sharedItems: [
+			{ key: LineItemKey("Rent"), divisor: 2 },
+			{ key: LineItemKey("Internet"), divisor: 2 },
 		],
 	},
 	{
 		name: "MultiRoommates",
-		overrides: [
-			{ key: LineItemKey("Rent"), amount: fromDollars(1067) },
-			{ key: LineItemKey("Internet"), amount: fromDollars(33) },
+		sharedItems: [
+			{ key: LineItemKey("Rent"), divisor: 3 },
+			{ key: LineItemKey("Internet"), divisor: 3 },
 		],
 	},
 ]
+
+const scenarioDivisor = (scenario: Scenario, key: LineItemKey): number =>
+	scenario.sharedItems.find((item) => item.key === key)?.divisor ?? 1
+
+export const applyScenarioShare = (amount: Cents, scenario: Scenario, key: LineItemKey): Cents =>
+	multiply(amount, 1 / scenarioDivisor(scenario, key))
+
+export const removeScenarioShare = (amount: Cents, scenario: Scenario, key: LineItemKey): Cents =>
+	multiply(amount, scenarioDivisor(scenario, key))
