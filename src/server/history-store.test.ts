@@ -2,7 +2,7 @@ import { afterAll, beforeAll, expect, test } from "bun:test"
 import assert from "node:assert/strict"
 import type { SqlClient } from "@effect/sql"
 import { PgClient } from "@effect/sql-pg"
-import { Effect, Schema } from "effect"
+import { Deferred, Effect, Fiber, Schema } from "effect"
 import { startDatabase } from "../../tests/database"
 import { BASE_LINE_ITEMS } from "../config/budget-config"
 import { PlannerState, TransactionInput } from "../domain/history"
@@ -761,4 +761,55 @@ test("partial correction observations cannot create another expense or change ta
 	expect(linked.item.resolution).toBe("linked")
 	expect(linked.transaction?.owner_protected).toBe(true)
 	expect(linked.transaction?.revision).toBe(1)
+})
+
+test("migration validates and audits the latest planner after an in-flight legacy write", async () => {
+	await run(
+		Effect.gen(function* () {
+			const pg = yield* PgClient.PgClient
+			yield* pg`create database migration_lock_test`
+		}),
+	)
+	const layer = PgClient.layer({ ...database.config, database: "migration_lock_test" })
+	await Effect.runPromise(
+		Effect.gen(function* () {
+			const pg = yield* PgClient.PgClient
+			yield* pg.withTransaction(initialMigration)
+			yield* pg`insert into users (id,email,password) values ('legacy-race','race@example.test','unused')`
+			yield* pg`insert into budgets (id,user_id,state) values (${Bun.randomUUIDv7()}, 'legacy-race', ${pg.json(planner)})`
+			const updated = { ...planner, grossIncome: 1750000 }
+			const writerReady = yield* Deferred.make<void>()
+			const releaseWriter = yield* Deferred.make<void>()
+			const writer = yield* Effect.fork(
+				pg.withTransaction(
+					Effect.gen(function* () {
+						yield* pg`update budgets set state = ${pg.json(updated)} where user_id = 'legacy-race'`
+						yield* Deferred.succeed(writerReady, undefined)
+						yield* Deferred.await(releaseWriter)
+					}),
+				),
+			)
+			yield* Deferred.await(writerReady)
+			const migration = yield* Effect.fork(pg.withTransaction(historyMigration))
+			try {
+				let waiting = false
+				for (let attempt = 0; attempt < 200 && !waiting; attempt++) {
+					const rows =
+						yield* pg`select pid from pg_stat_activity where datname = current_database() and wait_event_type = 'Lock'`
+					waiting = rows.length > 0
+				}
+				expect(waiting).toBe(true)
+			} finally {
+				yield* Deferred.succeed(releaseWriter, undefined)
+			}
+			yield* Fiber.join(writer)
+			yield* Fiber.join(migration)
+			const rows = yield* pg<{ state: unknown; snapshot: { state: unknown } }>`
+			select p.state, c.snapshot from planner_templates p join changes c on c.entity_id = p.id and c.entity_kind = 'planner'
+			where p.user_id = 'legacy-race'
+		`
+			expect(rows[0]?.state).toEqual(updated)
+			expect(rows[0]?.snapshot.state).toEqual(updated)
+		}).pipe(Effect.provide(layer)),
+	)
 })

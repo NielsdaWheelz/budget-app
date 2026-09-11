@@ -6,6 +6,7 @@ import { PlannerState } from "../../domain/history"
 export default Effect.gen(function* () {
 	const sql = yield* SqlClient.SqlClient
 	const pg = yield* PgClient.PgClient
+	yield* sql`lock table budgets in access exclusive mode`
 	const planners = yield* sql<{ id: string; user_id: string; state: unknown; created_at: string }>`
 		select id, user_id, state, created_at::text from budgets
 	`
