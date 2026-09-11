@@ -1,14 +1,10 @@
 import type { Component } from "solid-js"
+import { formatCurrency } from "../helpers/format"
 
 interface BracketRowProps {
 	readonly rate: number
 	readonly taxableAmount: number
 	readonly tax: number
-}
-
-const fmt = (cents: number): string => {
-	const dollars = Math.abs(cents) / 100
-	return dollars.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 export const BracketRow: Component<BracketRowProps> = (props) => {
@@ -24,14 +20,15 @@ export const BracketRow: Component<BracketRowProps> = (props) => {
 			}}
 		>
 			<span>
-				{(props.rate * 100).toFixed(0)}% on ${fmt(props.taxableAmount)}
+				{(props.rate * 100).toFixed(0)}% on {formatCurrency(props.taxableAmount)}
 			</span>
 			<span
 				style={{
 					"font-variant-numeric": "tabular-nums",
 				}}
 			>
-				{"\u2212"}${fmt(props.tax)}
+				{"\u2212"}
+				{formatCurrency(props.tax)}
 			</span>
 		</div>
 	)

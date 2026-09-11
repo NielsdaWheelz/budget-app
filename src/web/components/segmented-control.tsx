@@ -20,6 +20,7 @@ export function SegmentedControl<T extends string>(props: SegmentedControlProps<
 				{(option) => (
 					<button
 						type="button"
+						aria-pressed={props.value === option.value}
 						onClick={() => props.onChange(option.value)}
 						style={{
 							background: props.value === option.value ? "var(--color-accent)" : "transparent",

@@ -20,6 +20,6 @@
 		"exactOptionalPropertyTypes": false,
 		"noUncheckedIndexedAccess": true
 	},
-	"include": ["src/**/*", "bin/**/*"],
+	"include": ["src/**/*", "bin/**/*", "tests/**/*", "playwright.config.ts"],
 	"exclude": ["node_modules", "dist"]
 }

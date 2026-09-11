@@ -1,5 +1,6 @@
 import { type JSX, Show } from "solid-js"
 import type { Component } from "solid-js"
+import { formatCurrency } from "../helpers/format"
 
 interface SummaryCardProps {
 	readonly heading: string
@@ -13,17 +14,12 @@ interface SummaryCardProps {
 	readonly extra?: JSX.Element | undefined
 }
 
-const fmt = (cents: number): string => {
-	const dollars = Math.abs(cents) / 100
-	return dollars.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
-
 const fmtPct = (ratio: number): string => `${(ratio * 100).toFixed(1)}%`
 
 export const SummaryCard: Component<SummaryCardProps> = (props) => {
 	const displayAmount = () => {
-		const formatted = fmt(props.subtotal)
-		return props.isExpense ? `\u2212$${formatted}` : `$${formatted}`
+		const formatted = formatCurrency(props.subtotal)
+		return props.isExpense ? `\u2212${formatted}` : formatted
 	}
 
 	return (
