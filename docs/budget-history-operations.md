@@ -136,10 +136,13 @@ financial branch exists in the application.
 
 ## hard cutover
 
-backup owner: the account owner operates the hosted database's backups. retain
-encrypted daily backups for 30 days and the pre-cutover backup until a subsequent
-restore has been verified. configure and confirm this retention with the host;
-the application does not provision it. originals enlarge these backups.
+backup owner: the account owner operates database recovery. the current neon
+free plan provides [up to six hours of restore history](https://neon.com/pricing),
+limited by change volume. retain the encrypted pre-cutover backup for at least
+30 days and until a subsequent restore has been verified. this is a retained
+release snapshot, not daily backups or 30-day managed recovery. the longer
+managed window requires a paid plan; this release preserves the existing free
+plan. originals enlarge both storage and backups.
 
 1. pass the local proofs. verify production credentials, exact origin, owner
    mapping, and backup retention. stop browser and integration writes.
