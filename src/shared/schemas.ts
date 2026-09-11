@@ -13,12 +13,3 @@ export class LoginRequest extends Schema.Class<LoginRequest>("LoginRequest")({
 export class AuthResult extends Schema.Class<AuthResult>("AuthResult")({
 	email: Schema.String,
 }) {}
-
-export class BudgetState extends Schema.Class<BudgetState>("BudgetState")({
-	grossIncome: Schema.Number,
-	healthInsurance: Schema.Number,
-	rentersInsurance: Schema.Number,
-	scenarioName: Schema.String,
-	period: Schema.String,
-	lineItemAmounts: Schema.Record({ key: Schema.String, value: Schema.Number }),
-}) {}

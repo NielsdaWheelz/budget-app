@@ -308,7 +308,11 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 							color: "var(--color-text)",
 						}}
 					>
-						<InlineEdit value={props.healthInsurance} onCommit={props.onHealthInsuranceChange} />
+						<InlineEdit
+							value={props.healthInsurance}
+							label="health insurance"
+							onCommit={props.onHealthInsuranceChange}
+						/>
 					</span>
 					<span
 						style={{
@@ -353,7 +357,11 @@ export const DeductionsCard: Component<DeductionsCardProps> = (props) => {
 							color: "var(--color-text)",
 						}}
 					>
-						<InlineEdit value={props.rentersInsurance} onCommit={props.onRentersInsuranceChange} />
+						<InlineEdit
+							value={props.rentersInsurance}
+							label="renters insurance"
+							onCommit={props.onRentersInsuranceChange}
+						/>
 					</span>
 					<span
 						style={{

@@ -1,13 +1,12 @@
 import { BunContext, BunRuntime } from "@effect/platform-bun"
-import { PgClient, PgMigrator } from "@effect/sql-pg"
-import { fromBabelGlob } from "@effect/sql/Migrator"
+import { PgClient } from "@effect/sql-pg"
 import { Effect, Layer, Redacted } from "effect"
-import * as _00001 from "../migrations/00001_initial"
+import { migrate } from "../migrations"
 
 const url = process.env.DATABASE_URL_UNPOOLED
 if (!url) throw new Error("DATABASE_URL_UNPOOLED is required")
 
-PgMigrator.run({ loader: fromBabelGlob({ _00001_initial: _00001 }) }).pipe(
+migrate.pipe(
 	Effect.tap((results) =>
 		Effect.log(
 			results.length === 0

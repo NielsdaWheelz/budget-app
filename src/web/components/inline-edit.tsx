@@ -1,99 +1,96 @@
-import { type Component, Show, createSignal } from "solid-js"
+import { Option } from "effect"
+import { type Component, Show, createSignal, createUniqueId } from "solid-js"
+import { parseMoney } from "../../domain/money"
+import { centsToDecimal, formatCurrency } from "../helpers/format"
 
 interface InlineEditProps {
 	readonly value: number
 	readonly onCommit: (cents: number) => void
 	readonly disabled?: boolean | undefined
-}
-
-const formatDisplay = (cents: number): string => {
-	const dollars = Math.abs(cents) / 100
-	return `$${dollars.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-}
-
-const formatEditValue = (cents: number): string => {
-	const dollars = Math.abs(cents) / 100
-	return dollars.toFixed(2)
+	readonly label?: string | undefined
 }
 
 export const InlineEdit: Component<InlineEditProps> = (props) => {
 	const [editing, setEditing] = createSignal(false)
-	const [editValue, setEditValue] = createSignal("")
-
-	const startEdit = () => {
-		if (props.disabled) return
-		setEditValue(formatEditValue(props.value))
-		setEditing(true)
-	}
-
+	const [text, setText] = createSignal("")
+	const [error, setError] = createSignal<string | null>(null)
+	const id = createUniqueId()
 	const commit = () => {
-		const parsed = Number.parseFloat(editValue())
-		if (!Number.isNaN(parsed)) {
-			const cents = Math.round(parsed * 100)
-			props.onCommit(cents)
+		const parsed = parseMoney(text())
+		if (Option.isNone(parsed)) {
+			setError("enter a dollar amount with no more than two decimal places.")
+			return
 		}
+		props.onCommit(parsed.value)
 		setEditing(false)
+		setError(null)
 	}
-
-	const cancel = () => {
-		setEditing(false)
-	}
-
-	const onKeyDown = (e: KeyboardEvent) => {
-		if (e.key === "Enter") {
-			commit()
-		} else if (e.key === "Escape") {
-			cancel()
-		}
-	}
-
 	return (
 		<Show
 			when={editing()}
 			fallback={
 				<button
 					type="button"
-					onClick={startEdit}
 					disabled={props.disabled}
+					aria-label={`edit ${props.label ?? "amount"}: ${formatCurrency(props.value)}`}
+					onClick={() => {
+						setText(centsToDecimal(props.value))
+						setError(null)
+						setEditing(true)
+					}}
 					style={{
-						cursor: props.disabled ? "default" : "pointer",
-						"font-family": "Inter, sans-serif",
-						"font-variant-numeric": "tabular-nums",
 						background: "none",
 						border: "none",
 						padding: "0",
-						"font-size": "inherit",
 						color: "inherit",
+						"font-size": "inherit",
+						"font-variant-numeric": "tabular-nums",
+						cursor: "pointer",
 					}}
 				>
-					{formatDisplay(props.value)}
+					{formatCurrency(props.value)}
 				</button>
 			}
 		>
-			<input
-				ref={(el) => {
-					requestAnimationFrame(() => {
-						el.focus()
-						el.select()
-					})
-				}}
-				type="text"
-				value={editValue()}
-				onInput={(e) => setEditValue(e.currentTarget.value)}
-				onBlur={commit}
-				onKeyDown={onKeyDown}
-				style={{
-					"text-align": "right",
-					"font-variant-numeric": "tabular-nums",
-					"font-family": "Inter, sans-serif",
-					"font-size": "inherit",
-					border: "1px solid var(--color-border)",
-					"border-radius": "4px",
-					padding: "2px 6px",
-					outline: "none",
-					width: "100px",
-				}}
-			/>
+			<span>
+				<input
+					id={id}
+					aria-label={props.label ?? "amount"}
+					aria-invalid={error() !== null}
+					aria-describedby={error() ? `${id}-error` : undefined}
+					inputmode="decimal"
+					value={text()}
+					ref={(el) =>
+						requestAnimationFrame(() => {
+							el.focus()
+							el.select()
+						})
+					}
+					onInput={(event) => setText(event.currentTarget.value)}
+					onKeyDown={(event) => {
+						if (event.key === "Enter") {
+							event.preventDefault()
+							commit()
+						}
+						if (event.key === "Escape") {
+							event.preventDefault()
+							setEditing(false)
+						}
+					}}
+					style={{ width: "110px", "text-align": "right" }}
+				/>
+				<button type="button" onClick={commit}>
+					apply
+				</button>
+				<button type="button" onClick={() => setEditing(false)}>
+					cancel
+				</button>
+				<Show when={error()}>
+					<span id={`${id}-error`} role="alert" class="error">
+						{error()}
+					</span>
+				</Show>
+			</span>
 		</Show>
 	)
 }

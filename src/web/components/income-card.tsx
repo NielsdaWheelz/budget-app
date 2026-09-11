@@ -42,7 +42,11 @@ export const IncomeCard: Component<IncomeCardProps> = (props) => {
 						"font-variant-numeric": "tabular-nums",
 					}}
 				>
-					<InlineEdit value={props.grossIncome} onCommit={props.onGrossIncomeChange} />
+					<InlineEdit
+						value={props.grossIncome}
+						label="gross income"
+						onCommit={props.onGrossIncomeChange}
+					/>
 				</span>
 			</div>
 		</div>

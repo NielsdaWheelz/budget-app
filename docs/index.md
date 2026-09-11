@@ -12,6 +12,11 @@ This directory is the canonical home for repository documentation.
 
 ## Docs
 
+### product
+
+- [budget-history.md](budget-history.md): spending history, jarvis capability contract, and implementation plan
+- [budget-history-operations.md](budget-history-operations.md): integration, verification, and hard cutover
+
 ### Correctness and concurrency
 
 - [correctness.md](correctness.md): abnormality classification and system invariants
