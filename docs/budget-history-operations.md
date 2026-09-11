@@ -4,10 +4,15 @@ the [specification](budget-history.md) owns behavior. this document owns setup,
 integration, proof commands, and release. local verification is not a deployed
 smoke test or a production recovery claim.
 
-verified locally on 2026-09-11: lint, typecheck, build, 33 bun tests (209
+verified locally on 2026-09-11: lint, typecheck, build, 34 bun tests (212
 assertions), and 8 chromium tests pass. desktop and 390px mobile views inspected.
 the bun suite includes migration and backup restoration; the browser suite
 includes one journey through the real api and postgres.
+
+release rehearsal on 2026-09-11: a production postgres 17 snapshot restored into
+isolated postgres 17. the actual migration preserved the planner, owner, and
+session, created its matching initial audit, and fabricated no history. the
+cutover still requires a fresh backup after writes stop.
 
 ## setup and integration
 
